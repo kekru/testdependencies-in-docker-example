@@ -1,0 +1,32 @@
+Vagrant.configure("2") do |config|
+
+#Diese Zeile wuerde gebraucht, um dieses Vagrantfile unter Windows mit dem Windows Benutzer 'Test' und dem Passwort 'Geheim' zu starten.
+#SMB wird als Implementierung fuer shared folders, zwischen Virtueller Maschine und Host, gewaehlt.
+#Die Virtuelle Maschine dient als Hilfe, wenn Docker nicht auf dem Host installiert ist
+#config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "Test", smb_password: "Geheim"
+  
+  config.vm.define "myapp" do |myapp|
+    myapp.vm.provider "docker" do |d0|
+      d0.build_dir = "app"
+      d0.ports = ["8080:8080", "9990:9990"]
+      d0.name = "myapp"
+    end
+  end
+  
+  config.vm.define "mongo" do |mongo|
+    mongo.vm.provider "docker" do |d1|
+      d1.image =  "mongo"
+      d1.ports = ["27017:27017"]
+      d1.name = "mongo"
+    end
+  end
+  
+  config.vm.define "seleniumfirefox" do |seleniumfirefox|
+    seleniumfirefox.vm.provider "docker" do |d2|
+      d2.image =  "selenium/standalone-firefox:2.48.2"
+      d2.ports = ["4444:4444"]
+      d2.name = "seleniumfirefox"
+    end
+  end
+  
+end

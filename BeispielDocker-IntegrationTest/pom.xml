@@ -1,0 +1,475 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>de.fh-dortmund.kekru001.projektarbeit</groupId>
+		<artifactId>BeispielDocker</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>BeispielDocker-IntegrationTest</artifactId>
+
+	<properties>
+		<docker.host>127.0.0.1</docker.host>
+		<docker.port>4243</docker.port>
+		<scpuser>me</scpuser>
+		<scppasswd>root</scppasswd> 
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.fh-dortmund.kekru001.projektarbeit</groupId>
+			<artifactId>BeispielDocker-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>de.fh-dortmund.kekru001.projektarbeit</groupId>
+			<artifactId>BeispielDocker-ejb</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>de.fh-dortmund.kekru001.projektarbeit</groupId>
+			<artifactId>BeispielDocker-web</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.48.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-firefox-driver</artifactId>
+			<version>2.48.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-remote-driver</artifactId>
+			<version>2.48.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.wildfly</groupId>
+			<artifactId>wildfly-arquillian-container-remote</artifactId>
+			<version>8.2.1.Final</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.6.4</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19</version>
+				<executions>
+					<execution>
+						<!-- Standard id "default-test" überschreiben -->
+						<id>default-test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>**/*IntegrationTest.java</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>dockermaven</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>net.wouterdanes.docker</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>5.0.0</version>
+						<configuration>
+							<containers>
+								<container>
+									<!-- Containername: mongo -->
+									<id>mongo</id>
+									<!-- Der Container wird aus dem Image mongo erzeugt -->
+									<image>mongo</image>
+									<!-- Nach Start des Containers wird gewartet, bis er folgenden String 
+										ausgibt -->
+									<waitForStartup>waiting for connections on port 27017</waitForStartup>
+								</container>
+								<container>
+									<!-- Containername: selenium -->
+									<id>selenium</id>
+									<!-- Der Container wird aus dem Image selenium/standalone-firefox:2.48.2 
+										erzeugt -->
+									<image>selenium/standalone-firefox:2.48.2</image>
+								</container>
+								<container>
+									<!-- Containername: myapp -->
+									<id>myapp</id>
+									<!-- Der Container wird aus dem image app erzeugt. Das Image wird 
+										im Block <images> definiert und muss vorher erstellt werden -->
+									<image>app</image>
+									<!-- Nach Start des Containers wird gewartet, bis er folgenden String 
+										ausgibt (Regulärer Ausdruck) -->
+									<waitForStartup>started in .*ms</waitForStartup>
+								</container>
+							</containers>
+							<images>
+								<image>
+									<!-- Name für das Image -->
+									<id>app</id>
+									<!-- Dockerfile mit den Kommandos zum Erstellen des Images -->
+									<dockerFile>${project.basedir}/src/test/resources/dockerapp/Dockerfile</dockerFile>
+									<!-- Zusätzliche Dateien, die im ADD Befehl im Dockerfile dem Image 
+										hinzugefügt werden. -->
+									<artifacts>
+										<!-- Es wird die .ear Datei benötigt, die die EJB Anwendung beinhaltet -->
+										<artifact>
+											<!-- Hier befindet sich die .ear Datei -->
+											<file>${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear</file>
+											<!-- Im Dockerfile kann später auf eardir/BeispielDocker-ear.ear 
+												zugegriffen werden -->
+											<dest>eardir/BeispielDocker-ear.ear</dest>
+										</artifact>
+									</artifacts>
+								</image>
+							</images>
+						</configuration>
+						<executions>
+							<!-- In der Phase pre-integration-test werden die Images erstellt 
+								und dann die Container gestartet -->
+							<execution>
+								<id>setup-containers</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>build-images</goal>
+									<goal>start-containers</goal>
+								</goals>
+							</execution>
+							<!-- In der Phase post-integration-test werden die Container gestoppt 
+								und die vorher generierten Images werden gelöscht -->
+							<execution>
+								<id>cleanup-containers</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop-containers</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin><!-- https://maven.apache.org/surefire/maven-failsafe-plugin/ -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.19.1</version>
+						<configuration>
+							<!-- Host- und Portinformationen werden aus den vom Docker-Maven-Plugin 
+								generierten Variablen in andere Variablen kopiert, damit bei allen Maven 
+								Profilen die gleichen Variabnennamen vorhanden sind -->
+							<systemPropertyVariables>
+								<mongohost>${docker.containers.mongo.ports.27017/tcp.host}</mongohost>
+								<mongoport>${docker.containers.mongo.ports.27017/tcp.port}</mongoport>
+								<seleniumhost>${docker.containers.selenium.ports.4444/tcp.host}</seleniumhost>
+								<seleniumport>${docker.containers.selenium.ports.4444/tcp.port}</seleniumport>
+								<wildfly.management.host>${docker.containers.myapp.ports.9990/tcp.host}</wildfly.management.host>
+								<wildfly.management.port>${docker.containers.myapp.ports.9990/tcp.port}</wildfly.management.port>
+								<wildfly.http.host>${docker.containers.myapp.ports.8080/tcp.host}</wildfly.http.host>
+								<wildfly.http.port>${docker.containers.myapp.ports.8080/tcp.port}</wildfly.http.port>
+							</systemPropertyVariables>
+						</configuration>
+						<executions>
+							<!-- Integrationstests starten -->
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*IntegrationTest.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>dockercompose</id>
+			<build><!-- http://blog.darrenscott.com/2010/08/05/uploading-files-using-scp-and-the-maven-wagon-plugin/ -->
+
+				<plugins>
+					<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>wagon-maven-plugin</artifactId> 
+						<version>1.0</version> <executions> <execution> <id>uploadear</id> <phase>install</phase> 
+						<phase>pre-integration-test</phase> <goals> <goal>upload</goal> </goals> 
+						<configuration> <fromDir>${project.basedir}/../</fromDir> <includes>BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear, 
+						BeispielDocker-IntegrationTest/src/test/resources/dockercompose/*</includes> 
+						<url>scp://192.168.0.15</url> <serverId>dockercomposehost</serverId> <toDir>/home/me/dockercompose</toDir> 
+						</configuration> </execution> </executions> </plugin> -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>startdockercompose</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+
+									<target name="setup-docker" description="">
+										<property name="scphost" value="${docker.host}" />
+										<property name="scpuser" value="${scpuser}" />
+										<property name="scppasswd" value="${scppasswd}" />
+										<sshexec trust="true" failonerror="true" host="${scphost}"
+											username="${scpuser}" password="${scppasswd}"
+											command="mkdir -p /home/me/dockercompose/app/eardir" timeout="120000" />
+										<scp trust="true" failonerror="true" verbose="off" sftp="true"
+											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockerapp/Dockerfile"
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app" />
+										<scp trust="true" failonerror="true" verbose="off" sftp="true"
+											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app/eardir" />
+										<scp trust="true" failonerror="true" verbose="off" sftp="true"
+											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockercompose/docker-compose.yml"
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose" />
+										<sshexec trust="true" failonerror="true" host="${scphost}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(cd /home/me/dockercompose; docker-compose run wait)"
+											timeout="400000" />
+										<taskdef name="scp"
+											classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
+											<classpath refid="maven.plugin.classpath" />
+										</taskdef>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stopdockercompose</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+
+									<target name="teardown-docker" description="">
+										<property name="scphost" value="${docker.host}" />
+										<property name="scpuser" value="${scpuser}" />
+										<property name="scppasswd" value="${scppasswd}" />
+										<sshexec trust="true" failonerror="true" host="${scphost}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(cd /home/me/dockercompose; docker-compose stop; docker-compose rm -f)"
+											timeout="120000" />
+										<taskdef name="scp"
+											classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
+											<classpath refid="maven.plugin.classpath" />
+										</taskdef>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>ant</groupId>
+								<artifactId>ant-commons-net</artifactId>
+								<version>1.6.5</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-jsch</artifactId>
+								<version>1.9.1</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.19.1</version>
+						<configuration>
+							<!-- Host- und Portinformationen für die einzelnen Testservices definieren -->
+							<systemPropertyVariables>
+								<mongohost>${docker.host}</mongohost>
+								<mongoport>27017</mongoport>
+								<seleniumhost>${docker.host}</seleniumhost>
+								<seleniumport>4444</seleniumport>
+								<wildfly.management.host>${docker.host}</wildfly.management.host>
+								<wildfly.management.port>9990</wildfly.management.port>
+								<wildfly.http.host>${docker.host}</wildfly.http.host>
+								<wildfly.http.port>8080</wildfly.http.port>
+							</systemPropertyVariables>
+						</configuration>
+						<executions>
+							<!-- Integrationstests starten -->
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*IntegrationTest.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>vagrantvm</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>start-vagrant</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="setup-vagrant-vm" description="">
+										<mkdir
+											dir="${project.basedir}/vagrant-workdir/app/eardir" />
+										<copy
+											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
+											todir="${project.basedir}/vagrant-workdir/app/eardir" />
+										<copy
+											file="${project.basedir}/src/test/resources/dockerapp/Dockerfile"
+											todir="${project.basedir}/vagrant-workdir/app" />
+										<copy
+											file="${project.basedir}/src/test/resources/vagrant-provider/Vagrantfile"
+											todir="${project.basedir}/vagrant-workdir" />
+										<exec executable="vagrant"
+											dir="${project.basedir}/vagrant-workdir/">
+											<arg value="up" />											
+										</exec>
+										<exec executable="vagrant"
+											dir="${project.basedir}/vagrant-workdir/">
+											<arg value="provision" />											
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-vagrant</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="teardown-vagrant-vm" description="">
+										<exec executable="vagrant"
+											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir/">
+											<arg value="suspend" />
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>ant</groupId>
+								<artifactId>ant-commons-net</artifactId>
+								<version>1.6.5</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-jsch</artifactId>
+								<version>1.9.1</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.19.1</version>
+						<configuration>
+							<!-- Host- und Portinformationen für die einzelnen Testservices definieren -->
+							<systemPropertyVariables>
+								<mongohost>${docker.host}</mongohost>
+								<mongoport>27017</mongoport>
+								<seleniumhost>${docker.host}</seleniumhost>
+								<seleniumport>4444</seleniumport>
+								<wildfly.management.host>${docker.host}</wildfly.management.host>
+								<wildfly.management.port>9990</wildfly.management.port>
+								<wildfly.http.host>${docker.host}</wildfly.http.host>
+								<wildfly.http.port>8080</wildfly.http.port>
+							</systemPropertyVariables>
+						</configuration>
+						<executions>
+							<!-- Integrationstests starten -->
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*IntegrationTest.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+
+</project>

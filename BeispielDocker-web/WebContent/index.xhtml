@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<head>
+<title>Kleinanzeigen</title>
+<link rel="stylesheet" href="vendor/bootstrap.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-md-12">
+				<h1 id="headline">Kleinanzeigen</h1>
+				<div id="home-login">
+					<a href="login.jsf">Einloggen</a> oder <a href="register.jsf">Registrieren</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+
+			<div class="col-md-8">
+
+
+
+				<ui:repeat var="a" value="#{kleinanzeigenJSF.anzeigen}"
+					varStatus="aStatus">
+					<div id="anzeige#{aStatus.index}">
+						<h2 class="titelanzeige">#{a.titel}</h2>
+						<div class="div-verkaeuferkontaktieren">
+							<a href="mailto:#{a.ersteller.email}" class="emailanzeige">Nachricht senden</a>
+						</div>
+						<h:panelGroup rendered="#{a.gewerblich}" class="gewerblichanzeige"
+							styleClass="div-gewerblich">Gewerblich</h:panelGroup>
+						<p class="textanzeige">#{a.text}</p>
+						<p class="preisanzeige">Preis: #{a.preis / 100}€</p>
+						<p class="verkaeuferanzeige">Verkäufer: #{a.ersteller.name}</p>
+					</div>
+					<hr />
+				</ui:repeat>
+
+			</div>
+			<div class="col-md-4">
+
+				<h1>Neue Anzeige aufgeben</h1>
+				<h:form>
+					<table>
+						<tr>
+							<td>Titel</td>
+							<td><h:inputText styleClass="titelinput"
+									value="#{kleinanzeigenJSF.neueAnzeige.titel}" /></td>
+						</tr>
+						<tr>
+							<td>Beschreibung</td>
+							<td><h:inputTextarea styleClass="beschreibunginput"
+									value="#{kleinanzeigenJSF.neueAnzeige.text}" /></td>
+						</tr>
+						<tr>
+							<td>Preis</td>
+							<td><h:inputText styleClass="preisinput"
+									value="#{kleinanzeigenJSF.neueAnzeige.preis}" /></td>
+						</tr>
+					</table>
+
+					<h3>
+						<a href="#">Einloggen</a> oder Neues Konto erstellen
+					</h3>
+					<table>
+						<tr>
+							<td>Name</td>
+							<td><h:inputText styleClass="nameinput"
+									value="#{kleinanzeigenJSF.neueAnzeige.ersteller.name}" /></td>
+						</tr>
+						<tr>
+							<td>E-Mail</td>
+							<td><h:inputText styleClass="emailinput"
+									value="#{kleinanzeigenJSF.neueAnzeige.ersteller.email}" /></td>
+						</tr>
+						<tr>
+							<td>Passwort</td>
+							<td><h:inputSecret styleClass="passwortinput"
+									value="#{kleinanzeigenJSF.neueAnzeige.ersteller.password}" /></td>
+						</tr>
+					</table>
+					<h:commandButton styleClass="sendbutton" value="Absenden" actionListener="#{kleinanzeigenJSF.addAnzeige()}"/>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

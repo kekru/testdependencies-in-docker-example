@@ -1,0 +1,51 @@
+Vagrant.configure(2) do |config|
+  
+  #Die Virtuelle Maschine (VM) erhaelt das Betriebssystem Ubuntu 14.04 (Trusty Tahr) 64 Bit
+  config.vm.box = "ubuntu/trusty64"
+  
+  #VM interne Ports (guest) werden mit Ports des Hostrechners (host) verbunden
+  config.vm.network :forwarded_port, guest: 8080, host: 8080
+  config.vm.network :forwarded_port, guest: 9990, host: 9989
+  config.vm.network :forwarded_port, guest: 27017, host: 27017
+  config.vm.network :forwarded_port, guest: 4444, host: 4444
+  
+  #Der VM wird 1 GB Arbeitsspeicher zugewiesen
+  config.vm.provider :virtualbox do |p|
+    p.customize ["modifyvm", :id, "--memory", 1024]
+  end
+  
+  #Beim Installieren der Software in der VM (Provisioning) werden alle laufenden Container, von einem vorherigen Testlauf, gestoppt und geloescht und das Image myapp wird geloescht
+  config.vm.provision "shell",
+    inline: "sh -c 'docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi myapp ; true'" #'; true' bewirkt, dass Vagrant nicht abbricht, falls Docker noch nicht installiert ist
+
+  #Installation von docker
+  config.vm.provision "docker" do |d|
+    #Image mit dem Namen myapp erstellen fuer WildFly mit Beispielanwendung
+    d.build_image "/vagrant/app",
+      args: "-t myapp"
+    
+    #WildFly mit Beispielanwendung starten	
+    d.run "myapp",
+      args: "-p 8080:8080 -p 9990:9990 -e mongohost=192.168.0.102 -e mongoport=27017"
+      
+	#Mongo DB starten
+    d.run "mongo",
+      args: "-p 27017:27017"
+    
+	#Seleniumserver mit Firefox starten
+    d.run "selenium/standalone-firefox:2.48.2",
+      auto_assign_name: "false",
+      args: "--name seleniumfirefox -p 4444:4444"
+	
+	#folgender wait-Container funktioniert nicht, da er immer im Daemon Modus startet, obwohl daemonize auf false steht (getestet unter Vagrant Version 1.7.4), siehe auch https://www.vagrantup.com/docs/provisioning/docker.html
+	#d.run "n3llyb0y/wait",
+	  #daemonize: "false",
+	  #args: "-i --rm -e PORTS=27017,4444,8080,9990 -e TIMEOUT=300 --link myapp:myapp --link mongo:mongo --link seleniumfirefox:seleniumfirefox"
+  end
+  
+  #wait-Container starten, der wartet, bis die anderen Container bereit sind (genauer: bis sie TCP Verbindungen akzeptieren).
+  #Gestartet im interactive Modus (-i), damit das Vagrant Provisioning blockiert wird, bis der wait-Container durchgelaufen ist
+  config.vm.provision "shell",
+    inline: "docker run -i --rm -e PORTS=27017,4444,8080,9990 -e TIMEOUT=300 --link myapp:myapp --link mongo:mongo --link seleniumfirefox:seleniumfirefox n3llyb0y/wait"
+
+end

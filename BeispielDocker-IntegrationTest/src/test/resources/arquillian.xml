@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+	<defaultProtocol type="Servlet 3.0" />
+	<container qualifier="wildfly" default="true">
+		<configuration>
+			<property name="managementAddress">${wildfly.management.host}</property>
+			<property name="managementPort">${wildfly.management.port}</property>
+			<!-- <property name="managementAddress">127.0.0.1</property> <property 
+				name="managementPort">7411</property> -->
+			<!-- <property name="managementAddress">192.168.0.15</property>
+			<property name="managementPort">9990</property> -->
+			<!-- <property name="jbossHome">C:\Users\krummenauer\workspaceProjektarbeit2\WildFly\wildfly-8.2.1.Final</property> -->
+			<!-- <property name="jbossHome">C:\Users\Kevin\workspaceProjektarbeit\Wildfly\wildfly-8.2.0.Final</property> -->
+			<property name="username">admin</property>
+			<property name="password">pass</property>
+		</configuration>
+
+		<protocol type="Servlet 3.0">
+			<property name="host">${wildfly.http.host}</property>
+			<property name="port">${wildfly.http.port}</property>
+			<!-- <property name="host">192.168.0.15</property>
+			<property name="port">8080</property> -->
+		</protocol>
+	</container>
+
+</arquillian>

@@ -1,0 +1,33 @@
+app:
+   #Aus dem Dockerfile im Unterordner app ein Image erzeugt,
+   #aus dem dann ein Container erstellt wird
+   build: app
+   ports: 
+    - "8080:8080"
+    - "9990:9990"
+
+mongo:
+   image: mongo
+   ports:
+    - "27017:27017"
+
+selenium:
+   image: selenium/standalone-firefox:2.48.2
+   ports:
+    - "4444:4444"
+
+#der Container wait basiert auf dem Image https://hub.docker.com/r/n3llyb0y/wait/
+#er wartet solange, bis auf den spezifizierten Ports TCP Verbindungen moeglich sind
+wait:
+   image: n3llyb0y/wait
+   environment:
+    - PORTS="27017 4444 8080 9990"
+    - TIMEOUT=300
+   links:
+    - app
+    - mongo
+    - selenium
+    
+    
+    
+    
