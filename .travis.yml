@@ -1,6 +1,11 @@
 language: java
 jdk:
   - oraclejdk8
+  
+sudo: required
+
+services:
+  - docker
 
 script:
-  - mvn clean verify
+  - mvn clean verify -P dockermaven -Ddocker.host=127.0.0.1 -Ddocker.port=4243
