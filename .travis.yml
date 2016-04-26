@@ -6,6 +6,9 @@ sudo: required
 
 services:
   - docker
+  
+before_install:
+  - docker run -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
 
 script:
   - mvn clean verify -P dockermaven -Ddocker.host=127.0.0.1 -Ddocker.port=4243
