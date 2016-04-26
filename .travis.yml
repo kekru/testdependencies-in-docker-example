@@ -12,6 +12,9 @@ cache:
   - $HOME/.m2
   
 before_install:
+  - sudo curl -fsSL https://get.docker.com/ | sh
+  - sudo service docker start
+  - docker run --rm hello-world
   - docker version
   - docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
 
