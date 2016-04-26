@@ -4,8 +4,8 @@ jdk:
   
 sudo: required
 
-services:
-  - docker
+#services:
+#  - docker
   
 cache:
   directories:
