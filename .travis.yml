@@ -14,23 +14,27 @@ cache:
 before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
-  - sudo apt-get install -y sshpass
-  - sudo groupadd docker
-  - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
-  - sudo echo -e "\nAllowUsers testuser\n" >> /etc/ssh/sshd_config
-  - sudo service ssh reload
-  - sudo cat /etc/ssh/sshd_config
-  - sudo sshpass -p "testpasswd" ssh testuser@localhost
-  - ifconfig
-  - exit
-#  - sudo curl -fsSL https://get.docker.com/ | sh
+  - sudo curl -fsSL https://get.docker.com/ | sh
 ##  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
-#  - sudo docker run --rm hello-world
-#  - sudo docker version
+  - sudo docker run --rm hello-world
+  - sudo docker version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
 #  - sudo docker pull jboss/wildfly:8.2.1.Final
-#  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
+  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
+  - sudo docker run -d -p 2222:22 -e SSHUSER=me -e SSHPASSWD=root whiledo/ssh-server-custom-user
+  - sudo apt-get install -y sshpass
+#  - sudo groupadd docker
+#  - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
+#  - sudo echo -e "\nAllowUsers testuser\n" >> /etc/ssh/sshd_config
+#  - sudo service ssh reload
+#  - sudo cat /etc/ssh/sshd_config
+#  - sudo sshpass -p "testpasswd" ssh testuser@localhost
+  - sshpass -p "root" ssh me@$HOST_IP_ADDR -p 2222 -oStrictHostKeyChecking=no
+  - pwd
+  - ifconfig
+  - exit
+
 
 script:
   - mvn clean verify #-P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
