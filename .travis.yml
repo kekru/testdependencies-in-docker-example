@@ -15,10 +15,12 @@ before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
   - sudo apt-get install -y sshpass
-  - sudo cat /etc/ssh/sshd_config
   - sudo groupadd docker
   - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
-  - sudo sshpass -p "travis" ssh travis@localhost
+  - sudo echo -e "\nAllowUsers testuser\n" >> /etc/ssh/sshd_config
+  - sudo service ssh reload
+  - sudo cat /etc/ssh/sshd_config
+  - sudo sshpass -p "testpasswd" ssh testuser@localhost
   - ifconfig
   - exit
 #  - sudo curl -fsSL https://get.docker.com/ | sh
