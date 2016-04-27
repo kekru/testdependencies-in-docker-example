@@ -13,10 +13,10 @@ cache:
   
 before_install:
   - sudo curl -fsSL https://get.docker.com/ | sh
-#  - sudo usermod -aG docker travis
-  - sudo sudo -u travis -g docker -E docker run --rm hello-world
-  - sudo sudo -u travis -g docker -E docker version
-  - docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
+#  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
+  - sudo docker run --rm hello-world
+  - sudo docker -E docker version
+  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
 
 script:
   - sudo sudo -u travis -g docker -E mvn clean verify #-P dockermaven -Ddocker.host=127.0.0.1 -Ddocker.port=4243
