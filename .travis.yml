@@ -16,6 +16,7 @@ before_install:
   - echo $HOST_IP_ADDR
   - sudo apt-get install -y sshpass
   - sudo groupadd docker
+  - sudo service ssh start
   - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
   - sudo sshpass -p "travis" ssh travis@localhost
   - ifconfig
