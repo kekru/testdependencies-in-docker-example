@@ -14,6 +14,7 @@ cache:
 before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
+  - sudo apt-get install -y sshpass
   - sudo groupadd docker
   - sudo useradd -d /home/me -g docker -m -p $(echo "root" | openssl passwd -1 -stdin) me
   - sudo sshpass -p "root" ssh me@localhost
