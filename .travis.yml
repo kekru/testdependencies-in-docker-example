@@ -19,6 +19,6 @@ before_install:
   - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
 
 script:
-  - sudo sudo -u travis -g docker -E mvn clean verify #-P dockermaven -Ddocker.host=127.0.0.1 -Ddocker.port=4243
+  - sudo sudo -u travis -g docker -E mvn clean verify -P dockermaven -Ddocker.host=127.0.0.1 -Ddocker.port=4243
 #"sudo sudo -u travis -g docker -E xy" runs xy as travis user in the docker group, so we can use "docker..." 
 #instead of "sudo docker" inside mvn verify.
