@@ -30,10 +30,10 @@ before_install:
 #  - sudo service ssh reload
 #  - sudo cat /etc/ssh/sshd_config
 #  - sudo sshpass -p "testpasswd" ssh testuser@localhost
-  - sshpass -p "root" ssh me@$HOST_IP_ADDR -p 2222 -oStrictHostKeyChecking=no
-  - pwd
-  - ifconfig
-  - exit
+#  - sshpass -p "root" ssh me@$HOST_IP_ADDR -p 2222 -oStrictHostKeyChecking=no
+#  - pwd
+#  - ifconfig
+#  - exit
 
 
 script:
