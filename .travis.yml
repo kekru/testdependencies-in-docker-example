@@ -31,6 +31,7 @@ before_install:
 #  - sudo cat /etc/ssh/sshd_config
 #  - sudo sshpass -p "testpasswd" ssh testuser@localhost
 #  - sshpass -p "root" ssh me@$HOST_IP_ADDR -p 2222 -oStrictHostKeyChecking=no
+  - sudo echo -e "\nAllowUsers travis\n" >> /etc/ssh/sshd_config
   - sudo cat /etc/ssh/sshd_config
   - sudo sshpass -p "travis" ssh travis@$HOST_IP_ADDR -oStrictHostKeyChecking=no
 #  - pwd
