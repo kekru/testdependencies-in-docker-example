@@ -489,22 +489,33 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="setup-vagrant-provider" description="">
-										<mkdir
-											dir="${project.basedir}/vagrant-workdir-provider/app/eardir" />
-										<copy
+									<target name="setup-vagrant-provider" description="">		
+										<property name="scphost" value="${docker.host}" />
+										<property name="scpuser" value="${scpuser}" />
+										<property name="scppasswd" value="${scppasswd}" />
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="mkdir -p /home/${scpuser}/vagrant-workdir-provider/app/eardir" timeout="120000" />
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="chmod -R 777 /home/${scpuser}/vagrant-workdir-provider" timeout="120000" />
+										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
+											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockerapp/Dockerfile"
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/vagrant-workdir-provider/app" />
+										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
-											todir="${project.basedir}/vagrant-workdir-provider/app/eardir" />
-										<copy
-											file="${project.basedir}/src/test/resources/dockerapp/Dockerfile"
-											todir="${project.basedir}/vagrant-workdir-provider/app" />
-										<copy
-											file="${project.basedir}/src/test/resources/vagrant-provider/Vagrantfile"
-											todir="${project.basedir}/vagrant-workdir-provider" />
-										<exec executable="vagrant"
-											dir="${project.basedir}/vagrant-workdir-provider/">
-										        <arg value="up" />											
-										</exec>
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/vagrant-workdir-provider/app/eardir" />
+										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
+											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockercompose/docker-compose.yml"
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/vagrant-workdir-provider" />
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(cd /home/${scpuser}/vagrant-workdir-provider; vagrant up)"
+											timeout="400000" />
+										<taskdef name="scp"
+											classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
+											<classpath refid="maven.plugin.classpath" />
+										</taskdef>
 									</target>
 								</configuration>
 							</execution>
@@ -516,10 +527,10 @@
 								</goals>
 								<configuration>
 									<target name="teardown-vagrant-provider" description="">
-										<exec executable="vagrant"
-											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provider/">
-									                <arg value="destroy -f" />
-										</exec>
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(cd /home/${scpuser}/vagrant-workdir-provider; vagrant destroy -f)"
+											timeout="400000" />
 									</target>
 								</configuration>
 							</execution>
