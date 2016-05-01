@@ -512,6 +512,20 @@
 											username="${scpuser}" password="${scppasswd}"
 											command="(cd /home/${scpuser}/vagrant-workdir-provider; vagrant up)"
 											timeout="400000" />
+											
+										<!-- Warten, bis die TCP Ports der Container erreichbar sind -->
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(while ! echo exit | nc ${scphost} 27017; do sleep 10; done)"
+											timeout="400000" />
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(while ! echo exit | nc ${scphost} 8080; do sleep 10; done)"
+											timeout="400000" />
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="(while ! echo exit | nc ${scphost} 4444; do sleep 10; done)"
+											timeout="400000" />
 										<taskdef name="scp"
 											classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
 											<classpath refid="maven.plugin.classpath" />
@@ -527,6 +541,9 @@
 								</goals>
 								<configuration>
 									<target name="teardown-vagrant-provider" description="">
+										<property name="scphost" value="${docker.host}" />
+										<property name="scpuser" value="${scpuser}" />
+										<property name="scppasswd" value="${scppasswd}" />
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
 											command="(cd /home/${scpuser}/vagrant-workdir-provider; vagrant destroy -f)"
