@@ -24,7 +24,7 @@ before_install:
   - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
   - sudo mkdir -p /data/io
   - sudo docker run -d -p 2222:22 -e SSHUSER=me -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
-  - sudo /data/io/shellforward-server
+  - sudo /data/io/shellforward-server &
 
 #  - sudo apt-get install -y sshpass
 #  - sudo groupadd docker
