@@ -23,6 +23,7 @@ before_install:
   - echo $PATH
   - sudo echo $PATH
 #  - export PATH="$PATH:/data"
+  - ll /usr/local/bin/
   - sudo /usr/local/bin/docker-compose version
   - sudo docker-compose version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
