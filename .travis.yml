@@ -12,55 +12,36 @@ before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
   - sudo apt-get install -y tree
+  - sudo apt-get install -y virtualbox --fix-missing
+  - curl -L https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb > vagrant.deb
+  - sudo dpkg -i vagrant.deb
+  - rm vagrant.deb
   - sudo curl -fsSL https://get.docker.com/ | sh
-##  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
-#  - sudo docker run --rm hello-world
   - sudo docker version
   - sudo mkdir /data
   - sudo chmod 777 /data
-#  - sudo wget -P /data/docker-compose-run.sh https://github.com/docker/compose/releases/download/1.7.0/run.sh
-#  - sudo mv /data/docker-compose /usr/local/bin/docker-compose
-#  - sudo chmod +x /data/docker-compose-run.sh
-#  - alias docker-compose=/data/docker-compose-run.sh
-#  - echo $PATH
-#  - sudo echo $PATH
-#  - export PATH="$PATH:/data"
   - curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - docker-compose version
+#  Damit die einzelnen Buildzeiten vergleichbar sind, werden die Images schon hier geladen, ansonsten passiert dies beim ersten Durchlauf
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
 #  - sudo docker pull jboss/wildfly:8.2.1.Final
-  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
+#  - sudo docker pull n3llyb0y/wait
+  
+#  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
   - sudo mkdir -p /data/io
-  - sudo docker run -d -p 2222:22 -e SSHUSER=travis -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
-  - sudo /data/io/shellforward-server &
-  - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/travis:/home/travis whiledo/ssh-server-commands-on-host
+#  - sudo docker run -d -p 2222:22 -e SSHUSER=travis -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
+#  - sudo /data/io/shellforward-server &
+#  - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/travis:/home/travis whiledo/ssh-server-commands-on-host
 
-#  - sudo tree -apug /home/travis
-#  - sudo apt-get install -y sshpass
-#  - sudo groupadd docker
-#  - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
-#  - sudo echo -e "\nAllowUsers testuser\n" >> /etc/ssh/sshd_config
-#  - sudo service ssh reload
-#  - sudo cat /etc/ssh/sshd_config
-#  - sudo sshpass -p "testpasswd" ssh testuser@localhost
-#  - sshpass -p "root" ssh me@$HOST_IP_ADDR -p 2222 -oStrictHostKeyChecking=no
-#  - sudo echo -e "\nAllowUsers travis\n" >> /etc/ssh/sshd_config
-#  - sudo cat /etc/ssh/sshd_config
-#  - sudo sshpass -p "travis" ssh travis@$HOST_IP_ADDR -oStrictHostKeyChecking=no
-#  - pwd
-#  - ifconfig
-#  - exit
 
 
 script:
-  - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223 #-P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
-#"sudo sudo -u travis -g docker -E xy" runs xy as travis user in the docker group, so we can use "docker..." 
-#instead of "sudo docker" inside mvn verify.
-
-#sudo -E su travis -c
+#  - mvn clean verify -P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
+#  - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
+  - mvn clean verify
 
 after_failure:
   - sudo tree -apug /home/travis/dockercompose
