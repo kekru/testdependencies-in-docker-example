@@ -501,8 +501,9 @@
 										<copy
 											file="${project.basedir}/src/test/resources/vagrant-provider/Vagrantfile"
 											todir="${project.basedir}/vagrant-workdir-provider" />
-										<exec executable="sudo vagrant"
+										<exec executable="sudo"
 											dir="${project.basedir}/vagrant-workdir-provider/">
+											<arg value="vagrant" />
 											<arg value="up" />											
 										</exec>
 									</target>
@@ -516,8 +517,9 @@
 								</goals>
 								<configuration>
 									<target name="teardown-vagrant-provider" description="">
-										<exec executable="sudo vagrant"
+										<exec executable="sudo"
 											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provider/">
+											<arg value="vagrant" />
 											<arg value="destroy -f" />
 										</exec>
 									</target>
