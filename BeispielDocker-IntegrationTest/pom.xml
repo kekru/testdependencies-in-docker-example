@@ -274,19 +274,19 @@
 										<property name="scppasswd" value="${scppasswd}" />
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
-											command="mkdir -p /home/me/dockercompose/app/eardir" timeout="120000" />
+											command="mkdir -p /home/${scpuser}/dockercompose/app/eardir" timeout="120000" />
 										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockerapp/Dockerfile"
-											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app" />
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/dockercompose/app" />
 										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
-											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app/eardir" />
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/dockercompose/app/eardir" />
 										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockercompose/docker-compose.yml"
-											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose" />
+											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/dockercompose" />
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
-											command="(cd /home/me/dockercompose; docker-compose run wait)"
+											command="(cd /home/${scpuser}/dockercompose; docker-compose run wait)"
 											timeout="400000" />
 										<taskdef name="scp"
 											classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
@@ -309,7 +309,7 @@
 										<property name="scppasswd" value="${scppasswd}" />
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
-											command="(cd /home/me/dockercompose; docker-compose stop; docker-compose rm -f)"
+											command="(cd /home/${scpuser}/dockercompose; docker-compose stop; docker-compose rm -f)"
 											timeout="120000" />
 										<taskdef name="scp"
 											classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
