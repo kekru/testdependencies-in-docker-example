@@ -18,6 +18,7 @@ before_install:
 ##  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
 #  - sudo docker run --rm hello-world
   - sudo docker version
+  - sudo docker-compose version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
 #  - sudo docker pull jboss/wildfly:8.2.1.Final
