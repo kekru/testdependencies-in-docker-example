@@ -16,6 +16,7 @@ before_install:
   - curl -L https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb > vagrant.deb
   - sudo dpkg -i vagrant.deb
   - rm vagrant.deb
+  - vagrant version
   - sudo curl -fsSL https://get.docker.com/ | sh
   - sudo docker version
   - sudo mkdir /data
@@ -41,7 +42,7 @@ before_install:
 script:
 #  - mvn clean verify -P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
 #  - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
-  - mvn clean verify -P vagrantprovisionervm
+  - mvn clean verify -P vagrantprovider
 
 after_failure:
   - sudo tree -apug /home/travis/dockercompose
