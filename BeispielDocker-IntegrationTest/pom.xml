@@ -12,7 +12,9 @@
 		<docker.host>127.0.0.1</docker.host>
 		<docker.port>4243</docker.port>
 		<scpuser>me</scpuser>
-		<scppasswd>root</scppasswd> 
+		<scppasswd>root</scppasswd>
+		<ssh.port>22</ssh.port>
+		<scp.port>22</scp.port>
 	</properties>
 
 	<dependencies>
@@ -270,19 +272,19 @@
 										<property name="scphost" value="${docker.host}" />
 										<property name="scpuser" value="${scpuser}" />
 										<property name="scppasswd" value="${scppasswd}" />
-										<sshexec trust="true" failonerror="true" host="${scphost}"
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
 											command="mkdir -p /home/me/dockercompose/app/eardir" timeout="120000" />
-										<scp trust="true" failonerror="true" verbose="off" sftp="true"
+										<scp trust="true" failonerror="true" verbose="off" sftp="true" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockerapp/Dockerfile"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app" />
-										<scp trust="true" failonerror="true" verbose="off" sftp="true"
+										<scp trust="true" failonerror="true" verbose="off" sftp="true" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app/eardir" />
-										<scp trust="true" failonerror="true" verbose="off" sftp="true"
+										<scp trust="true" failonerror="true" verbose="off" sftp="true" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockercompose/docker-compose.yml"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose" />
-										<sshexec trust="true" failonerror="true" host="${scphost}"
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
 											command="(cd /home/me/dockercompose; docker-compose run wait)"
 											timeout="400000" />
@@ -305,7 +307,7 @@
 										<property name="scphost" value="${docker.host}" />
 										<property name="scpuser" value="${scpuser}" />
 										<property name="scppasswd" value="${scppasswd}" />
-										<sshexec trust="true" failonerror="true" host="${scphost}"
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
 											command="(cd /home/me/dockercompose; docker-compose stop; docker-compose rm -f)"
 											timeout="120000" />
