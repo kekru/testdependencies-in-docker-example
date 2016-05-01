@@ -371,7 +371,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>vagrantprovidervm</id>
+			<id>vagrantprovisionervm</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -386,24 +386,24 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="setup-vagrant-provider-vm" description="">
+									<target name="setup-vagrant-provisioner-vm" description="">
 										<mkdir
-											dir="${project.basedir}/vagrant-workdir-provider-vm/app/eardir" />
+											dir="${project.basedir}/vagrant-workdir-provisioner-vm/app/eardir" />
 										<copy
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
-											todir="${project.basedir}/vagrant-workdir-provider-vm/app/eardir" />
+											todir="${project.basedir}/vagrant-workdir-provisioner-vm/app/eardir" />
 										<copy
 											file="${project.basedir}/src/test/resources/dockerapp/Dockerfile"
-											todir="${project.basedir}/vagrant-workdir-provider-vm/app" />
+											todir="${project.basedir}/vagrant-workdir-provisioner-vm/app" />
 										<copy
-											file="${project.basedir}/src/test/resources/vagrant-provider-vm/Vagrantfile"
-											todir="${project.basedir}/vagrant-workdir-provider-vm" />
+											file="${project.basedir}/src/test/resources/vagrant-provisioner-vm/Vagrantfile"
+											todir="${project.basedir}/vagrant-workdir-provisioner-vm" />
 										<exec executable="vagrant"
-											dir="${project.basedir}/vagrant-workdir-provider-vm/">
+											dir="${project.basedir}/vagrant-workdir-provisioner-vm/">
 											<arg value="up" />											
 										</exec>
 										<exec executable="vagrant"
-											dir="${project.basedir}/vagrant-workdir-provider-vm/">
+											dir="${project.basedir}/vagrant-workdir-provisioner-vm/">
 											<arg value="provision" />											
 										</exec>
 									</target>
@@ -416,9 +416,9 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="teardown-vagrant-provider-vm" description="">
+									<target name="teardown-vagrant-provisioner-vm" description="">
 										<exec executable="vagrant"
-											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provider-vm/">
+											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provisioner-vm/">
 											<arg value="suspend -f" />
 										</exec>
 									</target>
@@ -474,7 +474,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>vagrantprovisioner</id>
+			<id>vagrantprovider</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -489,20 +489,20 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="setup-vagrant-provisioner" description="">
+									<target name="setup-vagrant-provider" description="">
 										<mkdir
-											dir="${project.basedir}/vagrant-workdir-provisioner/app/eardir" />
+											dir="${project.basedir}/vagrant-workdir-provider/app/eardir" />
 										<copy
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
-											todir="${project.basedir}/vagrant-workdir-provisioner/app/eardir" />
+											todir="${project.basedir}/vagrant-workdir-provider/app/eardir" />
 										<copy
 											file="${project.basedir}/src/test/resources/dockerapp/Dockerfile"
-											todir="${project.basedir}/vagrant-workdir-provisioner/app" />
+											todir="${project.basedir}/vagrant-workdir-provider/app" />
 										<copy
-											file="${project.basedir}/src/test/resources/vagrant-provisioner/Vagrantfile"
-											todir="${project.basedir}/vagrant-workdir-provisioner" />
+											file="${project.basedir}/src/test/resources/vagrant-provider/Vagrantfile"
+											todir="${project.basedir}/vagrant-workdir-provider" />
 										<exec executable="vagrant"
-											dir="${project.basedir}/vagrant-workdir-provisioner/">
+											dir="${project.basedir}/vagrant-workdir-provider/">
 											<arg value="up" />											
 										</exec>
 									</target>
@@ -515,9 +515,9 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="teardown-vagrant-provisioner" description="">
+									<target name="teardown-vagrant-provider" description="">
 										<exec executable="vagrant"
-											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provisioner/">
+											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provider/">
 											<arg value="destroy -f" />
 										</exec>
 									</target>
