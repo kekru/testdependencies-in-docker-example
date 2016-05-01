@@ -33,11 +33,11 @@ before_install:
 #  - sudo docker pull jboss/wildfly:8.2.1.Final
   - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
   - sudo mkdir -p /data/io
-  - sudo docker run -d -p 2222:22 -e SSHUSER=me -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
+  - sudo docker run -d -p 2222:22 -e SSHUSER=travis -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
   - sudo /data/io/shellforward-server &
   - sudo mkdir /home/me
   - sudo chmod 777 /home/me
-  - sudo docker run -d -p 2223:22 -e SSHUSER=me -e SSHPASSWD=root -v /home/me:/home/me whiledo/ssh-server-commands-on-host
+  - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/me:/home/me whiledo/ssh-server-commands-on-host
 
 #  - sudo apt-get install -y sshpass
 #  - sudo groupadd docker
@@ -56,7 +56,7 @@ before_install:
 
 
 script:
-  - mvn clean verify -P dockercompose -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223 #-P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
+  - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223 #-P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
 #"sudo sudo -u travis -g docker -E xy" runs xy as travis user in the docker group, so we can use "docker..." 
 #instead of "sudo docker" inside mvn verify.
 
