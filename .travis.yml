@@ -45,7 +45,7 @@ before_install:
 
 
 script:
-  - mvn clean verify -P dockercompose -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223#-P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
+  - mvn clean verify -P dockercompose -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223 #-P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
 #"sudo sudo -u travis -g docker -E xy" runs xy as travis user in the docker group, so we can use "docker..." 
 #instead of "sudo docker" inside mvn verify.
 
