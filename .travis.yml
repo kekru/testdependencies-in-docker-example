@@ -61,3 +61,6 @@ script:
 #instead of "sudo docker" inside mvn verify.
 
 #sudo -E su travis -c
+
+after_failure:
+  - sudo tree -apug /home/travis/dockercompose
