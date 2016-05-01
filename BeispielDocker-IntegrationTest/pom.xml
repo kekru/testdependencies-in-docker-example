@@ -275,6 +275,9 @@
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
 											command="mkdir -p /home/${scpuser}/dockercompose/app/eardir" timeout="120000" />
+										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
+											username="${scpuser}" password="${scppasswd}"
+											command="chmod -R 777 /home/${scpuser}/dockercompose" timeout="120000" />
 										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockerapp/Dockerfile"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/dockercompose/app" />
