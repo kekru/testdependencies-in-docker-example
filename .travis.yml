@@ -35,7 +35,7 @@ before_install:
   - sudo mkdir -p /data/io
   - sudo docker run -d -p 2222:22 -e SSHUSER=travis -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
   - sudo /data/io/shellforward-server &
-  - sudo mkdir /home/me
+  - sudo mkdir -p /home/me
   - sudo chmod 777 /home/me
   - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/me:/home/me whiledo/ssh-server-commands-on-host
 
