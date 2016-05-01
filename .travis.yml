@@ -19,7 +19,7 @@ before_install:
   - sudo chmod 777 /data
   - sudo wget -P /data/docker-compose https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m`
   - sudo chmod +x /data/docker-compose
-  - sudo export PATH=$PATH:/data
+  - export PATH="$PATH:/data"
   - sudo docker-compose version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
