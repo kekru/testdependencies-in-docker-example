@@ -275,13 +275,13 @@
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
 											command="mkdir -p /home/me/dockercompose/app/eardir" timeout="120000" />
-										<scp trust="true" failonerror="true" verbose="off" sftp="true" port="${scp.port}"
+										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockerapp/Dockerfile"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app" />
-										<scp trust="true" failonerror="true" verbose="off" sftp="true" port="${scp.port}"
+										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose/app/eardir" />
-										<scp trust="true" failonerror="true" verbose="off" sftp="true" port="${scp.port}"
+										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
 											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockercompose/docker-compose.yml"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/me/dockercompose" />
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
