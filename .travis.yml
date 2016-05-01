@@ -38,7 +38,7 @@ before_install:
   - sudo /data/io/shellforward-server &
   - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/travis:/home/travis whiledo/ssh-server-commands-on-host
 
-  - sudo tree -apug /home/travis
+#  - sudo tree -apug /home/travis
 #  - sudo apt-get install -y sshpass
 #  - sudo groupadd docker
 #  - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
