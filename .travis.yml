@@ -15,10 +15,10 @@ before_install:
 ##  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
 #  - sudo docker run --rm hello-world
   - sudo docker version
-  - sudo chmod +w /usr/local/bin
-  - sudo chmod +x /usr/local/bin
-  - sudo curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-  - sudo chmod +x /usr/local/bin/docker-compose
+  - sudo mkdir /data
+  - sudo curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > /data/docker-compose
+  - sudo chmod +x /data/docker-compose
+  - sudo export PATH=$PATH:/data
   - sudo docker-compose version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
