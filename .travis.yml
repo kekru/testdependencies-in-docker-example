@@ -12,6 +12,7 @@ before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
   - sudo apt-get install -y tree
+  - sudo chmod 777 /etc/apt/sources.list
   - sudo echo "deb http://download.virtualbox.org/virtualbox/debian precise contrib" >> /etc/apt/sources.list
   - wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
   - sudo apt-get install virtualbox-5.0
@@ -47,7 +48,8 @@ before_install:
 script:
 #  - mvn clean verify -P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
 #  - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
-  - mvn clean verify -P vagrantprovider -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
+#  - mvn clean verify -P vagrantprovider -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
+  - mvn clean verify -P vagrantprovisionervm -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
 
 after_failure:
   - sudo tree -apug /home/travis/dockercompose
