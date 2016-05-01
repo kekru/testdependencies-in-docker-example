@@ -17,13 +17,16 @@ before_install:
   - sudo docker version
   - sudo mkdir /data
   - sudo chmod 777 /data
-  - sudo wget -P /data/docker-compose-run.sh https://github.com/docker/compose/releases/download/1.7.0/run.sh
+#  - sudo wget -P /data/docker-compose-run.sh https://github.com/docker/compose/releases/download/1.7.0/run.sh
 #  - sudo mv /data/docker-compose /usr/local/bin/docker-compose
-  - sudo chmod +x /data/docker-compose-run.sh
-  - alias docker-compose=/data/docker-compose-run.sh
+#  - sudo chmod +x /data/docker-compose-run.sh
+#  - alias docker-compose=/data/docker-compose-run.sh
 #  - echo $PATH
 #  - sudo echo $PATH
 #  - export PATH="$PATH:/data"
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
   - sudo docker-compose version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
