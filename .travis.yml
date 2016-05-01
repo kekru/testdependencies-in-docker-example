@@ -18,6 +18,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y virtualbox-5.0
   - sudo apt-get install -y dkms
+  - sudo /sbin/rcvboxdrv setup
   - VBoxManage --version
 #  - sudo apt-get install -y virtualbox --fix-missing
 #  - curl -L http://download.virtualbox.org/virtualbox/5.0.20/virtualbox-5.0_5.0.20-106931~Ubuntu~precise_i386.deb > virtualbox.deb
