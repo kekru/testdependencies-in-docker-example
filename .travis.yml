@@ -45,7 +45,7 @@ before_install:
 script:
 #  - mvn clean verify -P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
 #  - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
-  - mvn clean verify -P vagrantprovider -Ddocker.host=$HOST_IP_ADDR
+  - sudo mvn clean verify -P vagrantprovider -Ddocker.host=$HOST_IP_ADDR
 
 after_failure:
   - sudo tree -apug /home/travis/dockercompose
