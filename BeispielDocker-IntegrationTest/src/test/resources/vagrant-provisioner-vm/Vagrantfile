@@ -12,6 +12,8 @@ Vagrant.configure(2) do |config|
   config.vm.network :forwarded_port, guest: 27017, host: 27017
   config.vm.network :forwarded_port, guest: 4444, host: 4444
   
+  config.vm.network "private_network", type: "dhcp"
+  
   #Der VM wird 1 GB Arbeitsspeicher zugewiesen
   config.vm.provider :virtualbox do |p|
     p.customize ["modifyvm", :id, "--memory", 1024]
