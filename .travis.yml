@@ -14,16 +14,19 @@ cache:
 before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
-#  - sudo curl -fsSL https://get.docker.com/ | sh
+  - sudo curl -fsSL https://get.docker.com/ | sh
 ##  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
 #  - sudo docker run --rm hello-world
- # - sudo docker version
+  - sudo docker version
 #  - sudo docker pull selenium/standalone-firefox:2.48.2
 #  - sudo docker pull mongo
 #  - sudo docker pull jboss/wildfly:8.2.1.Final
-#  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
-#  - sudo docker run -d -p 2222:22 -e SSHUSER=me -e SSHPASSWD=root whiledo/ssh-server-custom-user
-  - sudo apt-get install -y sshpass
+  - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
+  - sudo mkdir /data/io
+  - sudo docker run -d -p 2222:22 -e SSHUSER=me -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
+  - sudo /data/io/shellforward-server
+
+#  - sudo apt-get install -y sshpass
 #  - sudo groupadd docker
 #  - sudo useradd -d /home/testuser -g docker -m -p $(echo "testpasswd" | openssl passwd -1 -stdin) testuser
 #  - sudo echo -e "\nAllowUsers testuser\n" >> /etc/ssh/sshd_config
@@ -31,9 +34,9 @@ before_install:
 #  - sudo cat /etc/ssh/sshd_config
 #  - sudo sshpass -p "testpasswd" ssh testuser@localhost
 #  - sshpass -p "root" ssh me@$HOST_IP_ADDR -p 2222 -oStrictHostKeyChecking=no
-  - sudo echo -e "\nAllowUsers travis\n" >> /etc/ssh/sshd_config
-  - sudo cat /etc/ssh/sshd_config
-  - sudo sshpass -p "travis" ssh travis@$HOST_IP_ADDR -oStrictHostKeyChecking=no
+#  - sudo echo -e "\nAllowUsers travis\n" >> /etc/ssh/sshd_config
+#  - sudo cat /etc/ssh/sshd_config
+#  - sudo sshpass -p "travis" ssh travis@$HOST_IP_ADDR -oStrictHostKeyChecking=no
 #  - pwd
 #  - ifconfig
 #  - exit
