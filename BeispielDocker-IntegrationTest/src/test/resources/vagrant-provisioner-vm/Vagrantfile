@@ -3,9 +3,12 @@ Vagrant.configure(2) do |config|
   #Die Virtuelle Maschine (VM) erhaelt das Betriebssystem Ubuntu 14.04 (Trusty Tahr) 64 Bit
   config.vm.box = "ubuntu/trusty64"
   
+  #Maximal 10 Minuten (600 Sekunden) warten, bis die VM gestartet ist, ohne Provisionierung
+  config.vm.boot_timeout = 600
+  
   #VM interne Ports (guest) werden mit Ports des Hostrechners (host) verbunden
   config.vm.network :forwarded_port, guest: 8080, host: 8080
-  config.vm.network :forwarded_port, guest: 9990, host: 9989
+  config.vm.network :forwarded_port, guest: 9990, host: 9990
   config.vm.network :forwarded_port, guest: 27017, host: 27017
   config.vm.network :forwarded_port, guest: 4444, host: 4444
   
