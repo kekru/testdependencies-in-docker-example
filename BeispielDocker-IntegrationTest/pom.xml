@@ -371,7 +371,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>vagrantvm</id>
+			<id>vagrantprovidervm</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -386,24 +386,24 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="setup-vagrant-vm" description="">
+									<target name="setup-vagrant-provider-vm" description="">
 										<mkdir
-											dir="${project.basedir}/vagrant-workdir/app/eardir" />
+											dir="${project.basedir}/vagrant-workdir-provider-vm/app/eardir" />
 										<copy
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
-											todir="${project.basedir}/vagrant-workdir/app/eardir" />
+											todir="${project.basedir}/vagrant-workdir-provider-vm/app/eardir" />
 										<copy
 											file="${project.basedir}/src/test/resources/dockerapp/Dockerfile"
-											todir="${project.basedir}/vagrant-workdir/app" />
+											todir="${project.basedir}/vagrant-workdir-provider-vm/app" />
 										<copy
-											file="${project.basedir}/src/test/resources/vagrant-provider/Vagrantfile"
-											todir="${project.basedir}/vagrant-workdir" />
+											file="${project.basedir}/src/test/resources/vagrant-provider-vm/Vagrantfile"
+											todir="${project.basedir}/vagrant-workdir-provider-vm" />
 										<exec executable="vagrant"
-											dir="${project.basedir}/vagrant-workdir/">
+											dir="${project.basedir}/vagrant-workdir-provider-vm/">
 											<arg value="up" />											
 										</exec>
 										<exec executable="vagrant"
-											dir="${project.basedir}/vagrant-workdir/">
+											dir="${project.basedir}/vagrant-workdir-provider-vm/">
 											<arg value="provision" />											
 										</exec>
 									</target>
@@ -416,10 +416,109 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target name="teardown-vagrant-vm" description="">
+									<target name="teardown-vagrant-provider-vm" description="">
 										<exec executable="vagrant"
-											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir/">
-											<arg value="suspend" />
+											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provider-vm/">
+											<arg value="suspend -f" />
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>ant</groupId>
+								<artifactId>ant-commons-net</artifactId>
+								<version>1.6.5</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-jsch</artifactId>
+								<version>1.9.1</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.19.1</version>
+						<configuration>
+							<!-- Host- und Portinformationen für die einzelnen Testservices definieren -->
+							<systemPropertyVariables>
+								<mongohost>${docker.host}</mongohost>
+								<mongoport>27017</mongoport>
+								<seleniumhost>${docker.host}</seleniumhost>
+								<seleniumport>4444</seleniumport>
+								<wildfly.management.host>${docker.host}</wildfly.management.host>
+								<wildfly.management.port>9990</wildfly.management.port>
+								<wildfly.http.host>${docker.host}</wildfly.http.host>
+								<wildfly.http.port>8080</wildfly.http.port>
+							</systemPropertyVariables>
+						</configuration>
+						<executions>
+							<!-- Integrationstests starten -->
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>**/*IntegrationTest.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>vagrantprovisioner</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>start-vagrant</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="setup-vagrant-provisioner" description="">
+										<mkdir
+											dir="${project.basedir}/vagrant-workdir-provisioner/app/eardir" />
+										<copy
+											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
+											todir="${project.basedir}/vagrant-workdir-provisioner/app/eardir" />
+										<copy
+											file="${project.basedir}/src/test/resources/dockerapp/Dockerfile"
+											todir="${project.basedir}/vagrant-workdir-provisioner/app" />
+										<copy
+											file="${project.basedir}/src/test/resources/vagrant-provisioner/Vagrantfile"
+											todir="${project.basedir}/vagrant-workdir-provisioner" />
+										<exec executable="vagrant"
+											dir="${project.basedir}/vagrant-workdir-provisioner/">
+											<arg value="up" />											
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-vagrant</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="teardown-vagrant-provisioner" description="">
+										<exec executable="vagrant"
+											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provisioner/">
+											<arg value="destroy -f" />
 										</exec>
 									</target>
 								</configuration>
