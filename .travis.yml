@@ -11,7 +11,7 @@ cache:
 before_install:
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
-  - apt-get install -y tree
+  - sudo apt-get install -y tree
   - sudo curl -fsSL https://get.docker.com/ | sh
 ##  - sudo usermod -aG docker travis #does not work, because it takes effect after relogin to the shell, but we cannot relogin on travis ci
 #  - sudo docker run --rm hello-world
