@@ -418,7 +418,7 @@
 								<configuration>
 									<target name="teardown-vagrant-provisioner-vm" description="">
 										<exec executable="vagrant"
-											dir="${project.basedir}/../BeispielDocker-IntegrationTest/vagrant-workdir-provisioner-vm/">
+											dir="${project.basedir}/vagrant-workdir-provisioner-vm/">
 											<arg value="suspend -f" />
 										</exec>
 									</target>
