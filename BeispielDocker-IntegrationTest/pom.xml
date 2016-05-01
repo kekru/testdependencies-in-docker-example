@@ -506,7 +506,7 @@
 											file="${project.basedir}/../BeispielDocker-ear/target/BeispielDocker-ear-0.0.1-SNAPSHOT.ear"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/vagrant-workdir-provider/app/eardir" />
 										<scp trust="true" failonerror="true" verbose="off" sftp="false" port="${scp.port}"
-											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/dockercompose/docker-compose.yml"
+											file="${project.basedir}/../BeispielDocker-IntegrationTest/src/test/resources/vagrant-provider/Vagrantfile"
 											todir="${scpuser}:${scppasswd}@${scphost}:/home/${scpuser}/vagrant-workdir-provider" />
 										<sshexec trust="true" failonerror="true" host="${scphost}" port="${ssh.port}"
 											username="${scpuser}" password="${scppasswd}"
