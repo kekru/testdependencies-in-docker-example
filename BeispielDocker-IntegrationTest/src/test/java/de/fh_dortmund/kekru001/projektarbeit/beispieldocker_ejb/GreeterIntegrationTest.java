@@ -2,6 +2,7 @@ package de.fh_dortmund.kekru001.projektarbeit.beispieldocker_ejb;
 
 import static org.junit.Assert.assertEquals;
 import javax.inject.Inject;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
