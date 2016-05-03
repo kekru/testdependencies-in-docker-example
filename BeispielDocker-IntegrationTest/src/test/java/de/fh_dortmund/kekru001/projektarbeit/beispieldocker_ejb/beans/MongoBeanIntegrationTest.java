@@ -33,82 +33,42 @@ import de.fh_dortmund.kekru001.projektarbeit.beispieldocker_common.beans.MongoLo
 import de.fh_dortmund.kekru001.projektarbeit.beispieldocker_common.entities.Anzeige;
 import de.fh_dortmund.kekru001.projektarbeit.beispieldocker_common.entities.Benutzer;
 
+/**
+ * Der Test wird mit dem Arquillian Testrunner gestartet und spaeter auf dem WildFly ausgefuehrt
+ */
 @RunWith(Arquillian.class)
-public class MongoBeanIntegrationTest {
-	// docker run --rm -it -p 8080:8080 -p 9990:9990 -p 999:999 b847e77ea144
+public class MongoBeanIntegrationTest {	
 
-	//	static{
-	//		System.setProperty("wildfly.management.host", "192.168.0.15");
-	//		System.setProperty("wildfly.management.port", "9990");
-	//		System.setProperty("wildfly.http.host", "192.168.0.15");
-	//		System.setProperty("wildfly.http.port", "8080");
-	//	}
-
+	/**
+	 * Die MongoBean soll getestet werden
+	 */
 	@EJB
-	MongoLocal mongoBean;
+	private MongoLocal mongoBean;
 
-	MongoClient mongoClient;
-	MongoDatabase db;
-
-
-	@Before
-	public void init() throws IOException{
-		//		System.out.println(MongoBeanIntegrationTest.class.getResourceAsStream("classes/arquillianproperties.properties"));
-		//		System.out.println(MongoBeanIntegrationTest.class.getResourceAsStream("/WEB-INF/classes/arquillianproperties.properties"));
-		//		System.out.println(MongoBeanIntegrationTest.class.getResourceAsStream("arquillianproperties.properties"));
-		//		System.out.println(MongoBeanIntegrationTest.class.getResourceAsStream("/arquillianproperties.properties"));
-		//		System.out.println(MongoBeanIntegrationTest.class.getResourceAsStream("WEB-INF/classes/arquillianproperties.properties"));
-
-		Properties p = new Properties();
-		p.load(MongoBeanIntegrationTest.class.getResourceAsStream("/arquillianproperties.properties"));
-		for(val pr : p.entrySet()){
-			System.setProperty((String) pr.getKey(), (String) pr.getValue());
-		}
-
-		System.out.println("Property " + p.getProperty("ARQT_HalloWelt") + ", "+p.getProperty("HalloWelt"));
-		//		String host = "5.45.108.198";// "192.168.0.15";
-		//		int port = 27017;
-		String host = System.getProperty("mongohost");
-		int port = Integer.parseInt(System.getProperty("mongoport"));
-		mongoClient = new MongoClient(host, port);
-
-		db = mongoClient.getDatabase("myDB");
-		assertNotNull(db);
-
-		assertNotNull(mongoClient);
-		assertNotNull(db);
-		db.getCollection(MongoBean.COLLECTION_ANZEIGE).drop();
-		db.getCollection(MongoBean.COLLECTION_BENUTZER).drop();
-		db.getCollection(MongoBean.COLLECTION_ENTITYIDS).drop();
-
-	}
-
-	@After
-	public void cleanUp(){
-		if(mongoClient != null){//TODO Warum ist der beim mvn clean install null?
-			mongoClient.close();
-		}
-	}
-
-
+	private MongoClient mongoClient;
+	private MongoDatabase db;
+	
+	/**
+	 * Definition der Klassen und Dateien, die zu einem Archiv zusammengefasst werden.
+	 * Das Archiv, zusammen mit dieser Testklasse, wird von Arquillian auf den WildFlyserver kopiert, dort deployed und diese Testklasse wird gestartet
+	 */
 	@Deployment
 	public static WebArchive archive() throws FileNotFoundException, IOException{
 
-
-		//		System.setProperty("ARQT_mongohost", System.getProperty("mongohost"));
-		//		System.setProperty("ARQT_mongoport", System.getProperty("mongoport"));
-		//		System.setProperty("ARQT_HalloWelt", "Hallo Welt");
+		//Speicherung der Java Systemvariablen mongohost und mongoport in einer Propertiesdatei, die spaeter dem Archiv hinzugefuegt wird.
+		//Die Variablen werden im Maven Build vor den Integrationstests gesetzt.
+		//Sie werden auf dem Wildfly benötigt, um sich mit der MongoDB zu verbinden
 		Properties p = new Properties();
-
 		p.setProperty("mongohost", System.getProperty("mongohost"));
 		p.setProperty("mongoport", System.getProperty("mongoport"));
-
 		File f = new File("arquillianproperties.properties");
 		p.store(new FileOutputStream(f), "ArquillianProperties");
 
+		//Alle in den pom.xml definierten Abhaengigkeiten soll auch in das Archiv
 		File[] files = Maven.resolver().loadPomFromFile("../BeispielDocker-common/pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
 		File[] files2 = Maven.resolver().loadPomFromFile("../BeispielDocker-ejb/pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
 
+		//Erzeugung der Archivs
 		WebArchive archive = ShrinkWrap.create(WebArchive.class)
 				.addClass(Benutzer.class)
 				.addClass(Anzeige.class)
@@ -119,10 +79,53 @@ public class MongoBeanIntegrationTest {
 				.addAsLibraries(files2)
 				.addAsResource(f)
 				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-//		System.out.println(archive.toString(true));
+
 		return archive;
 	}
 
+
+	/**
+	 * Vor dem Test wird die Mongo DB geleert
+	 */
+	@Before
+	public void init() throws IOException{		
+
+		//Auslesen der in arquillianproperties.properties gespeicherten Properties (mongohost und mongoport) und Speicherung als Java Systemproperty
+		Properties p = new Properties();
+		p.load(MongoBeanIntegrationTest.class.getResourceAsStream("/arquillianproperties.properties"));
+		for(val pr : p.entrySet()){
+			System.setProperty((String) pr.getKey(), (String) pr.getValue());
+		}
+		
+		//Auslesen von Host und Port der Mongo DB. Diese werden ebenfalls innerhalb der MongoBean ausgelesen
+		String host = System.getProperty("mongohost");
+		int port = Integer.parseInt(System.getProperty("mongoport"));
+		mongoClient = new MongoClient(host, port);
+
+		db = mongoClient.getDatabase("myDB");
+		assertNotNull(db);
+
+		assertNotNull(mongoClient);
+		assertNotNull(db);
+		
+		//leeren der Datenbank
+		db.getCollection(MongoBean.COLLECTION_ANZEIGE).drop();
+		db.getCollection(MongoBean.COLLECTION_BENUTZER).drop();
+		db.getCollection(MongoBean.COLLECTION_ENTITYIDS).drop();
+
+	}
+
+	@After
+	public void cleanUp(){
+		if(mongoClient != null){
+			mongoClient.close();
+		}
+	}
+	
+
+	/**
+	 * Test der Speicherfunktion und das anschliessende Abrufen der gespeicherten Datensaetze
+	 */
 	@Test
 	public void testSaveAndFind() {
 		assertNotNull(mongoBean);	
@@ -153,6 +156,9 @@ public class MongoBeanIntegrationTest {
 
 	}
 
+	/**
+	 * Testet den Abruf aller Anzeigen zu einem Benutzer
+	 */
 	@Test
 	public void testFindAllAnzeige(){
 		assertNotNull(mongoBean);
