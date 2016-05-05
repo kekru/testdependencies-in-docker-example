@@ -419,7 +419,7 @@
 									<target name="teardown-vagrant-provisioner-vm" description="">
 										<exec executable="vagrant"
 											dir="${project.basedir}/vagrant-workdir-provisioner-vm/">
-											<arg value="suspend -f" />
+											<arg value="suspend" />
 										</exec>
 									</target>
 								</configuration>
