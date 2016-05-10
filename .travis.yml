@@ -1,3 +1,4 @@
+# Kevin Krummenauer 2016
 language: java
 jdk:
   - oraclejdk8
@@ -9,10 +10,11 @@ cache:
   - $HOME/.m2
   
 before_install:
+# Eigene IP Adresse merken. Ueber die IP Adresse kommunizieren die Maven Builds spaeter. So wird ein Remote Host Simuliert
   - export HOST_IP_ADDR=$(hostname --ip-address)
   - echo $HOST_IP_ADDR
-  - sudo apt-get install -y tree
 
+# Installation Virtual Box
 #  - sudo apt-get install linux-headers-3.13.0-63-generic  
 #  - sudo chmod 777 /etc/apt/sources.list
 #  - sudo echo "deb http://download.virtualbox.org/virtualbox/debian precise contrib" >> /etc/apt/sources.list
@@ -25,37 +27,50 @@ before_install:
 #  - sudo /etc/init.d/vboxdrv setup
 #  - VBoxManage --version
 
+# Installation Vagrant
   - curl -L https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb > vagrant.deb
   - sudo dpkg -i vagrant.deb
   - rm vagrant.deb
   - vagrant version
+  
+# Installation Docker
   - sudo curl -fsSL https://get.docker.com/ | sh
   - sudo docker version
-  - sudo mkdir /data
-  - sudo chmod 777 /data
+  
+# Installation Docker Compose
   - curl -L https://github.com/docker/compose/releases/download/1.7.0/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - docker-compose version
   
-#  Damit die einzelnen Buildzeiten vergleichbar sind, werden die Images schon hier geladen, ansonsten passiert dies beim ersten Durchlauf
+#  Damit die einzelnen Buildzeiten vergleichbar sind, werden die Images schon hier geladen, ansonsten passiert dies beim ersten Mavendurchlauf
   - sudo docker pull selenium/standalone-firefox:2.48.2
   - sudo docker pull mongo
   - sudo docker pull jboss/wildfly:8.2.1.Final
   - sudo docker pull n3llyb0y/wait
-  
+
+# Docker Remote API wird ueber Port 4243 verfuegbar gemacht  
   - sudo docker run -d -p 4243:2375 -v /var/run/docker.sock:/var/run/docker.sock jarkt/docker-remote-api
+  
+# Starten eines SSH Server, um einen Remote Docker Host zu simulieren  
+  - sudo mkdir /data
+  - sudo chmod 777 /data
   - sudo mkdir -p /data/io
+  # Dieser SSH Server auf Port 2222 kann Kommandozeilenbefehle auf dem Hostrechner ausfuehren
+  # Er schreibt die enthaltenen Befehle in Dateien in /data/io/in und gibt aus, was in /data/io/out enhalten ist
   - sudo docker run -d -p 2222:22 -e SSHUSER=travis -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
+  # Der "shellforward-server" laeuft auf dem Host und fuehrt Kommandos aus, die in /data/io/in stehen und schreibt die Rueckgaben in /data/io/out, sodass der SSH Server im Docker Container auf Port 2222 diese ausgeben kann
   - sudo /data/io/shellforward-server &
+  # Dieser SSH Server auf Port 2223 ist fuer SCP Dateiuebertragungen zustaendig, da der obige in seinem "SHELLFORWARD" Modus das nicht kann.
+  # Gemounted ist /home/travis, also erscheinen alle Dateien, die per SCP unter /home/travis gespeichert werden, auf dem Host-Dateisystem
+  # Die Varianten Vagrant mit Docker als Provider und Docker Compose speichern ihre Dateien über SCP unter /home/travis
   - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/travis:/home/travis whiledo/ssh-server-commands-on-host
 
-
+# Starten der verschiedenen Mavendurchlaufe
 script:
   - mvn clean verify -P dockermaven -Ddocker.host=$HOST_IP_ADDR -Ddocker.port=4243
   - mvn clean verify -P dockercompose -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
   - mvn clean verify -P vagrantprovider -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
+# Vagrant mit Docker als Provisioner in einer VM konnte auf Travis CI nicht zum laufen gebracht werden
 #  - mvn clean verify -P vagrantprovisionervm -Dscpuser=travis -Ddocker.host=$HOST_IP_ADDR -Dssh.port=2222 -Dscp.port=2223
 
-after_failure:
-  - sudo tree -apug /home/travis/dockercompose
