@@ -57,11 +57,11 @@ before_install:
   - sudo chmod 777 /data
   - sudo mkdir -p /data/io
   # Dieser SSH Server auf Port 2222 kann Kommandozeilenbefehle auf dem Hostrechner ausfuehren
-  # Er schreibt die enthaltenen Befehle in Dateien in /data/io/in und gibt aus, was in /data/io/out enhalten ist
+  # Er schreibt die enthaltenen Befehle in /data/io/in und gibt aus, was in /data/io/out enhalten ist
   - sudo docker run -d -p 2222:22 -e SSHUSER=travis -e SSHPASSWD=root -e SHELLFORWARD=yes -v /data/io:/data/io whiledo/ssh-server-commands-on-host
   # Der "shellforward-server" laeuft auf dem Host und fuehrt Kommandos aus, die in /data/io/in stehen und schreibt die Rueckgaben in /data/io/out, sodass der SSH Server im Docker Container auf Port 2222 diese ausgeben kann
   - sudo /data/io/shellforward-server &
-  # Dieser SSH Server auf Port 2223 ist fuer SCP Dateiuebertragungen zustaendig, da der obige in seinem "SHELLFORWARD" Modus das nicht kann.
+  # Dieser SSH Server auf Port 2223 ist fuer SCP Dateiuebertragungen zustaendig, da der obige in seinem "SHELLFORWARD"-Modus das nicht kann.
   # Gemounted ist /home/travis, also erscheinen alle Dateien, die per SCP unter /home/travis gespeichert werden, auf dem Host-Dateisystem
   # Die Varianten Vagrant mit Docker als Provider und Docker Compose speichern ihre Dateien über SCP unter /home/travis
   - sudo docker run -d -p 2223:22 -e SSHUSER=travis -e SSHPASSWD=root -v /home/travis:/home/travis whiledo/ssh-server-commands-on-host
