@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
     
     #WildFly mit Beispielanwendung starten	
     d.run "myapp",
-      args: "-p 8080:8080 -p 9990:9990 -e mongohost=192.168.0.102 -e mongoport=27017"
+      args: "-p 8080:8080 -p 9990:9990"
       
 	#Mongo DB starten
     d.run "mongo",
