@@ -15,4 +15,4 @@ Zum lokalen Starten muss Java JDK 1.8, Maven, VirtualBox und Vagrant installiert
 
 
 # Beispielanwendung im Browser betrachten
-Wenn die Beispielanwendung außerhalb eines Buildvorgangs gestartet werden soll, um sie im Webbrowser zu benutzen, dann müssen im Container mit dem WildFlyserver die Umgebungsvariablen `mongohost=<IP des Docker Host>` und `mongoport=<Port der Mongo DB (Standard: 27017)>` gesetzt werden.
+Wenn die Beispielanwendung mit einer der vier Varianten außerhalb eines Buildvorgangs gestartet werden soll, um sie im Webbrowser zu benutzen, dann müssen im Container mit dem WildFlyserver die Umgebungsvariablen `mongohost=<IP des Docker Host>` und `mongoport=<Port der Mongo DB (Standard: 27017)>` gesetzt werden. Während des Testlaufs werden diese Informationen in den Arquilliantests definiert.
